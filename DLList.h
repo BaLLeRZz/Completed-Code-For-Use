@@ -41,6 +41,52 @@ public:
 		}
 		return out;
 	}
+
+	template<class U>
+	class Iterator
+	{
+	private:
+		ListBox<U>* ptr;
+	public:
+		Iterator(ListBox<U>* ptr) : ptr(ptr) {};
+		Iterator<U>& operator++() // ++i
+		{
+			this->ptr = this->ptr->next;
+			return *this;
+		}
+
+		Iterator<U> operator++(int) // i++
+		{
+			Iterator<U> cpy = *this;
+			this->ptr = this->ptr->next;
+			return cpy;
+		}
+
+		const bool operator==(const Iterator<U>& other) const
+		{
+			return this->ptr == other.ptr;
+		}
+
+		const bool operator!=(const Iterator<U>& other) const
+		{
+			return !(*this == other);
+		}
+
+		U& operator*() // *i
+		{
+			return this->ptr->data;
+		}
+	};
+
+	Iterator<T> begin()
+	{
+		return Iterator<T>(this->first);
+	}
+
+	Iterator<T> end()
+	{
+		return Iterator<T>(nullptr);
+	}
 };
 
 template<class T>
