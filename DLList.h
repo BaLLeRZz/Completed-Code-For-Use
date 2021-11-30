@@ -17,7 +17,7 @@ class DLList
 private:
 	ListBox<T>* first{};
 	ListBox<T>* last{};
-	size_t size;
+	size_t size{};
 	void copy(const DLList<T>& other);
 	void erase();
 public:
@@ -26,10 +26,17 @@ public:
 	DLList<T>& operator=(const DLList<T>& other);
 	~DLList();
 
-	void pushBack(const T& element);
-	void popBack();
-	void pushFront(const T& element);
-	void popFront();
+	void push_back(const T& element);
+	void pop_back();
+	void push_front(const T& element);
+	void pop_front();
+	void push_at(int index, const T& element);
+	void pop_at(size_t index);
+	T& get_first() const;
+	T& get_last() const;
+	size_t get_size() const;
+
+	T& operator[](const size_t index) const;
 
 	friend std::ostream& operator<<(std::ostream& out, const DLList<T>& list)
 	{
@@ -40,52 +47,6 @@ public:
 			current = current->next;
 		}
 		return out;
-	}
-
-	template<class T>
-	class Iterator
-	{
-	private:
-		ListBox<T>* ptr;
-	public:
-		Iterator(ListBox<T>* ptr) : ptr(ptr) {};
-		Iterator<T>& operator++() // ++i
-		{
-			this->ptr = this->ptr->next;
-			return *this;
-		}
-
-		Iterator<T> operator++(int) // i++
-		{
-			Iterator<T> cpy = *this;
-			this->ptr = this->ptr->next;
-			return cpy;
-		}
-
-		const bool operator==(const Iterator<T>& other) const
-		{
-			return this->ptr == other.ptr;
-		}
-
-		const bool operator!=(const Iterator<T>& other) const
-		{
-			return !(*this == other);
-		}
-
-		T& operator*() // *i
-		{
-			return this->ptr->data;
-		}
-	};
-
-	const Iterator<T>& begin() const
-	{
-		return Iterator<T>(this->first);
-	}
-
-	const Iterator<T> end() const
-	{
-		return Iterator<T>(nullptr);
 	}
 };
 
@@ -141,7 +102,7 @@ DLList<T>::~DLList()
 }
 
 template<class T>
-void DLList<T>::pushBack(const T& element)
+void DLList<T>::push_back(const T& element)
 {
 	this->size++;
 	if (!this->first)
@@ -157,7 +118,7 @@ void DLList<T>::pushBack(const T& element)
 }
 
 template<class T>
-void DLList<T>::popBack()
+void DLList<T>::pop_back()
 {
 	if (this->size == 0)
 		return;
@@ -178,7 +139,7 @@ void DLList<T>::popBack()
 }
 
 template<class T>
-void DLList<T>::pushFront(const T& element)
+void DLList<T>::push_front(const T& element)
 {
 	this->size++;
 	if (!this->first)
@@ -206,14 +167,105 @@ void DLList<T>::pushFront(const T& element)
 }
 
 template<class T>
-void DLList<T>::popFront()
+void DLList<T>::pop_front()
 {
 	if (this->size == 0)
 		return;
 	
 	this->size--;
-	this->first->previous = this->first;
+	ListBox<T>* temp = this->first;
 	this->first = this->first->next;
-	delete this->first->previous;
-	this->first->previous = nullptr;
+	delete temp;
+}
+
+template<class T>
+void DLList<T>::push_at(int index, const T& element)
+{
+	if (index < 0 || index > this->size)
+		return;
+
+	if (index == this->size)
+	{
+		this->push_back(element);
+		return;
+	}
+
+	if (index == 0)
+	{
+		this->push_front(element);
+		return;
+	}
+
+	ListBox<T>* current = this->first;
+	while (index > 0)
+	{
+		current = current->next;
+		index--;
+	}
+	ListBox<T>* newElement = new ListBox<T>(element);
+	newElement->previous = current->previous;
+	newElement->next = current;
+	current->previous = newElement;
+	ListBox<T>* temp = newElement->previous;
+	temp->next = newElement;
+}
+
+template<class T>
+void DLList<T>::pop_at(size_t index)
+{
+	if (index > this->size - 1)
+		return;
+
+	if (index == 0)
+	{
+		this->pop_front();
+		return;
+	}
+
+	if (index == this->size - 1)
+	{
+		this->pop_back();
+		return;
+	} 
+
+	ListBox<T>* current = this->first;
+	while (index > 0)
+	{
+		current = current->next;
+		index--;
+	}
+	ListBox<T>* temp = current->previous;
+	temp->next = current->next;
+	temp = current->next;
+	temp->previous = current->previous;
+	temp = current;
+	delete temp;
+}
+
+template<class T>
+T& DLList<T>::get_first() const
+{
+	return this->first->data;
+}
+
+template<class T>
+T& DLList<T>::get_last() const
+{
+	return this->last->data;
+}
+
+template<class T>
+size_t DLList<T>::get_size() const
+{
+	return this->size;
+}
+
+template<class T>
+T& DLList<T>::operator[](const size_t index) const
+{
+	ListBox<T>* current = this->first;
+	for (size_t i = 0; i < index; i++)
+		current = current->next;
+
+	return current->data;
 }
