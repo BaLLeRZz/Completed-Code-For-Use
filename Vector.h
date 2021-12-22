@@ -17,29 +17,25 @@ public:
 	Vector<T>& operator=(const Vector<T>&);
 	~Vector();
 
-	size_t getSize() const;
-	void insert(const T&, const size_t&);
-	void add(const T&);
-	void remove(const size_t&);
+	size_t get_size() const;
+	void push_back(const T&);
+	void pop_back();
+	void push_front(const T&);
+	void pop_front();
+	void push_at(const size_t&, const T&);
+	void pop_at(const size_t&);
 	void clear();
 	void print() const;
 	void reverse();
-	bool containsAnother(const Vector<T>&) const;
+	bool contains_another(const Vector<T>&) const;
 	T& operator[](const size_t&) const;
 	bool operator!=(const char*) const;
 
 	friend std::ostream& operator<<(std::ostream& out, const Vector<T>& vector)
 	{
 		for (size_t i = 0; i < vector.size; i++)
-			out << vector.vector[i] << std::endl << std::endl;
+			out << vector.vector[i] << std::endl;
 		return out;
-	}
-
-	friend std::istream& operator>>(std::istream& in, const Vector<T>& vector)
-	{
-		for (size_t i = 0; i < vector.size; i++)
-			in >> vector.vector[i];
-		return in;
 	}
 };
 
@@ -104,14 +100,44 @@ Vector<T>::~Vector()
 }
 
 template<class T>
-size_t Vector<T>::getSize() const
+size_t Vector<T>::get_size() const
 {
 	return this->size;
 }
 
 template<class T>
-void Vector<T>::insert(const T& element, const size_t& index)
+void Vector<T>::push_back(const T& element)
 {
+	if (this->size >= this->capacity)
+		this->resize();
+
+	this->vector[this->size++] = element;
+}
+
+template<class T>
+void Vector<T>::pop_back()
+{
+	this->pop_at(this->size - 1);
+}
+
+template<class T>
+void Vector<T>::push_front(const T& element)
+{
+	this->push_at(0, element);
+}
+
+template<class T>
+void Vector<T>::pop_front()
+{
+	this->pop_at(0);
+}
+
+template<class T>
+void Vector<T>::push_at(const size_t& index, const T& element)
+{
+	if (index > this->size)
+		return;
+
 	if (this->size >= this->capacity)
 		this->resize();
 
@@ -123,16 +149,7 @@ void Vector<T>::insert(const T& element, const size_t& index)
 }
 
 template<class T>
-void Vector<T>::add(const T& element)
-{
-	if (this->size >= this->capacity)
-		this->resize();
-
-	this->vector[this->size++] = element;
-}
-
-template<class T>
-void Vector<T>::remove(const size_t& index)
+void Vector<T>::pop_at(const size_t& index)
 {
 	if (index >= this->size)
 		return;
@@ -181,9 +198,9 @@ void Vector<T>::reverse()
 }
 
 template<class T>
-bool Vector<T>::containsAnother(const Vector<T>& other) const
+bool Vector<T>::contains_another(const Vector<T>& other) const
 {
-	size_t sizeOther = other.getSize();
+	size_t sizeOther = other.get_size();
 	bool flag;
 	for (size_t i = 0; i < sizeOther; i++)
 	{
