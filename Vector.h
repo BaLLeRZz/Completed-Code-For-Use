@@ -27,7 +27,9 @@ public:
 	void clear();
 	void print() const;
 	void reverse();
+	bool empty() const;
 	bool contains_another(const Vector<T>&) const;
+
 	T& operator[](const size_t&) const;
 	bool operator!=(const char*) const;
 
@@ -156,7 +158,8 @@ void Vector<T>::pop_at(const size_t& index)
 
 	T* temp = new T[this->size - 1];
 	for (size_t i = index; i < this->size; i++)
-		this->vector[i] = this->vector[i + 1];
+		if (i + 1 < this->size)
+			this->vector[i] = this->vector[i + 1];
 
 	for (size_t i = 0; i < this->size - 1; i++)
 		temp[i] = this->vector[i];
@@ -195,6 +198,12 @@ void Vector<T>::reverse()
 
 	this->erase();
 	this->vector = temp;
+}
+
+template<class T>
+bool Vector<T>::empty() const
+{
+	return this->size == 0;
 }
 
 template<class T>
