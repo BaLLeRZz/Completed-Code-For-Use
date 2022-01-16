@@ -28,6 +28,7 @@ public:
 	void print() const;
 	void reverse();
 	bool empty() const;
+	bool contains(const T&) const;
 	bool contains_another(const Vector<T>&) const;
 
 	T& operator[](const size_t&) const;
@@ -204,6 +205,16 @@ template<class T>
 bool Vector<T>::empty() const
 {
 	return this->size == 0;
+}
+
+template<class T>
+bool Vector<T>::contains(const T& element) const
+{
+	for (size_t i = 0; i < this->size; i++)
+		if (this->vector[i] == element)
+			return true;
+
+	return false;
 }
 
 template<class T>
