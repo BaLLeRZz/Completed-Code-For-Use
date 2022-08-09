@@ -27,7 +27,7 @@ public:
 	const bool insert(const int value);
 	const bool insert(const Tree& node);
 	const bool remove(const int value);
-    const bool remove(const Tree& node);
+	const bool remove(const Tree& node);
 	const bool contains(const Tree& node);
 	void print() const;
 };
@@ -108,17 +108,14 @@ std::string Tree::print_helper(const std::vector<Tree>& subtrees, std::string re
 
 const bool Tree::contains_helper(const std::vector<Tree>& subtrees, const std::vector<Tree>& other_subtrees)
 {
-	if (subtrees.size() != other_subtrees.size())
-		return false;
-
-	size_t size = subtrees.size(), size_children{};
+	size_t size_subtrees = subtrees.size(), size_other = other_subtrees.size(), size_children{};
 	bool flag = true;
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size_other; i++)
 	{
 		flag = false;
-		for (size_t j = 0; j < size; j++)
+		for (size_t j = 0; j < size_subtrees; j++)
 		{
-			if (subtrees[i] == other_subtrees[j])
+			if (other_subtrees[i].value == subtrees[j].value)
 			{
 				flag = true;
 				break;
@@ -130,14 +127,14 @@ const bool Tree::contains_helper(const std::vector<Tree>& subtrees, const std::v
 	}
 
 	std::vector<Tree> lower_levels1{}, lower_levels2{};
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size_subtrees; i++)
 	{
 		size_children = subtrees[i].direct_children.size();
 		for (size_t j = 0; j < size_children; j++)
 			lower_levels1.push_back(subtrees[i].direct_children[j]);
 	}
 
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size_other; i++)
 	{
 		size_children = other_subtrees[i].direct_children.size();
 		for (size_t j = 0; j < size_children; j++)
@@ -329,5 +326,5 @@ const bool Tree::contains(const Tree& node)
 
 void Tree::print() const
 {
-	std::cout << this->print_helper(this->direct_children, "", 0);
+	std::cout << this->print_helper(this->direct_children, "", 0) << std::endl;
 }
